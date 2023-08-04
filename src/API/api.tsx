@@ -1,49 +1,68 @@
 import React, {useEffect, useState} from 'react'
 import axios from "axios";
 
-const settings={
+export type ResponseType<D> = {
+    resultCode: number
+    messages: Array<string>
+    fieldsErrors: Array<string>
+    data: D
+}
+
+type TodolistType = {
+    id: string
+    addedDate: string
+    order: number
+    title: string
+}
+type CreateTodolistResponseType = {
+    resultCode: number
+    messages: Array<string>
+    fieldsErrors: Array<string>
+    data: {
+        item: TodolistType
+    }
+}
+type UpdateTodolistResponseType = {
+    resultCode: number
+    messages: Array<string>
+    fieldsErrors: Array<string>
+    data: {}
+}
+type DeleteTodolistResponseType = {
+    resultCode: number
+    messages: Array<string>
+    fieldsErrors: Array<string>
+    data: {}
+}
+
+
+const instance=axios.create({
+    baseURL:'https://https://social-network.samuraijs.com/api/1.1',
     withCredentials:true,
     headers:{
         'API-KEY':'04179916-1cd9-4a8d-bea3-202ee52f7094'
     }
-}
+})
 
-export const GetTodolists = () => {
-    const [state, setState] = useState<any>(null)
-    useEffect(() => {
-        axios.get('https://https://social-network.samuraijs.com/api/1.1/todo-lists',settings)
-            .then((res)=>{
-                setState(res.data)
-            })
-        // здесь мы будем делать запрос и ответ закидывать в стейт.
-        // который в виде строки будем отображать в div-ке
+export const todolistAPI = {
+    updateTodolist(todolistId: string, title: string) {
+        const promise = instance.put<TodolistType[]>(
+            `/todo-lists/${todolistId}`,
+            { title: title },
 
-    }, [])
-    return <div>{JSON.stringify(state)}</div>
-}
-export const CreateTodolist = () => {
-    const [state, setState] = useState<any>(null)
-    useEffect(() => {
-        axios.post('https://https://social-network.samuraijs.com/api/1.1/todo-lists',
-            {title:'newTDlist'},
-            settings)
-
-
-    }, [])
-
-    return <div>{JSON.stringify(state)}</div>
-}
-export const DeleteTodolist = () => {
-    const [state, setState] = useState<any>(null)
-    useEffect(() => {
-    }, [])
-
-    return <div>{JSON.stringify(state)}</div>
-}
-export const UpdateTodolistTitle = () => {
-    const [state, setState] = useState<any>(null)
-    useEffect(() => {
-    }, [])
-
-    return <div>{JSON.stringify(state)}</div>
+        )
+        return promise
+    },
+    DeleteTodolist(todolistId: string){
+        const promise = instance.delete<TodolistType[]>(`/todo-lists/${todolistId}`,)
+        return promise
+    },
+    CreateTodolist(){
+        const promise = instance.post<TodolistType[]>('/todo-lists',
+            {title:'newTDlist'})
+        return promise
+    },
+    GetTodolists(){
+        const promise = instance.get<TodolistType[]>('/todo-lists')
+        return promise}
 }
