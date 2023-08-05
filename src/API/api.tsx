@@ -46,7 +46,7 @@ const instance=axios.create({
 
 export const todolistAPI = {
     updateTodolist(todolistId: string, title: string) {
-        const promise = instance.put<TodolistType[]>(
+        const promise = instance.put<UpdateTodolistResponseType>(
             `/todo-lists/${todolistId}`,
             { title: title },
 
@@ -54,11 +54,11 @@ export const todolistAPI = {
         return promise
     },
     DeleteTodolist(todolistId: string){
-        const promise = instance.delete<TodolistType[]>(`/todo-lists/${todolistId}`,)
+        const promise = instance.delete<DeleteTodolistResponseType>(`/todo-lists/${todolistId}`,)
         return promise
     },
     CreateTodolist(){
-        const promise = instance.post<TodolistType[]>('/todo-lists',
+        const promise = instance.post<CreateTodolistResponseType>('/todo-lists',
             {title:'newTDlist'})
         return promise
     },
