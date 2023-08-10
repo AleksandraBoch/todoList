@@ -96,18 +96,23 @@ export const changeTodolistFilterAC = (id: string, filter: FilterValuesType): Ch
 }
 
 export const setTodolistsAC = (todolists: Array<TodolistType>): SetTodolistsActionType => {
-    return {type: 'SET-TODOLISTS', todolists}
+    return {type: 'SET-TODOLISTS', todolists} as const
 }
 
 
-export const fetchTodoListsThunk=(dispatch:Dispatch)=>{
-    todolistsAPI.getTodolists()
-        .then((res)=>{
+// export const fetchTodoListsThunk=(dispatch:Dispatch)=>{
+//     todolistsAPI.getTodolists()
+//         .then((res)=>{
+//         dispatch(setTodolistsAC(res.data))
+//     })
+
+// }
+export const fetchTodoListsTC=()=>(dispatch:Dispatch)=>{
+    todolistsAPI.getTodolists().then((res)=>{
         dispatch(setTodolistsAC(res.data))
     })
-
 }
 
-function dispatch(arg0: SetTodolistsActionType) {
+function dispatch(arg: SetTodolistsActionType) {
     throw new Error('Function not implemented.');
 }
