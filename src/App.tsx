@@ -40,11 +40,13 @@ function App() {
         dispatch(fetchTodoListsTC)
     }, [])
 
-
     const removeTask = useCallback(function (id: string, todolistId: string) {
-        const action = removeTaskAC(id, todolistId);
         dispatch(deleteTaskTC(id,todolistId));
     }, []);
+
+
+
+
 
     const addTask = useCallback(function (title: string, todolistId: string) {
         const action = addTaskAC(title, todolistId);
