@@ -113,6 +113,21 @@ export const fetchTodoListsTC=()=>(dispatch:Dispatch)=>{
     })
 }
 
+
+export const deleteTodoListTC=(todolistId: string)=>(dispatch:Dispatch)=>{
+    todolistsAPI.deleteTodolist(todolistId).then((res)=>{
+        dispatch(removeTodolistAC(todolistId))
+    })
+}
+
+export const addTodoListTC=(title: string)=>(dispatch:Dispatch)=>{
+    todolistsAPI.createTodolist(title).then((res)=>{
+        dispatch(addTodolistAC(title))
+    })
+}
 function dispatch(arg: SetTodolistsActionType) {
     throw new Error('Function not implemented.');
 }
+// export const changeTitleTodoTC=(id: string, title: string)=>(dispatch:Dispatch)=>{
+//     todolistsAPI.updateTodolist(id,tit)
+// }
