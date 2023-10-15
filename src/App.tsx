@@ -31,6 +31,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatchType, AppRootStateType} from './state/store';
 import {TaskStatuses, TaskType} from './api/todolists-api'
+import {LinearProgress} from "@mui/material";
 
 
 export type TasksStateType = {
@@ -49,20 +50,17 @@ function App() {
     }, [])
 
     const removeTask = useCallback(function (id: string, todolistId: string) {
-        dispatch(deleteTaskTC(id,todolistId));
+        dispatch(deleteTaskTC(id, todolistId));
     }, []);
-
-
-
 
 
     const addTask = useCallback(function (title: string, todolistId: string) {
 
-        dispatch(createTaskTC(todolistId,title));
+        dispatch(createTaskTC(todolistId, title));
     }, []);
 
     const changeStatus = useCallback(function (id: string, status: TaskStatuses, todolistId: string) {
-        dispatch(updateTaskStatusTC (id,todolistId,status));
+        dispatch(updateTaskStatusTC(id, todolistId, status));
     }, []);
 
     const changeTaskTitle = useCallback(function (id: string, newTitle: string, todolistId: string) {
@@ -99,6 +97,7 @@ function App() {
                     </Typography>
                     <Button color="inherit">Login</Button>
                 </Toolbar>
+                {status ==='loading'&& <LinearProgress/>}
             </AppBar>
             <Container fixed>
                 <Grid container style={{padding: '20px'}}>
