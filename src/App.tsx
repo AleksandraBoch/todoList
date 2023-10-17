@@ -11,27 +11,20 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import {Menu} from '@mui/icons-material';
-import {
-    addTodolistAC, addTodoListTC,
+import {addTodoListTC,
     changeTodolistFilterAC,
     changeTodolistTitleAC, deleteTodoListTC, fetchTodoListsTC,
     FilterValuesType,
-    removeTodolistAC,
     TodolistDomainType
 } from './state/todolists-reducer'
 import {
-    addTaskAC,
-    changeTaskStatusAC,
-    changeTaskTitleAC,
     createTaskTC,
     deleteTaskTC,
-    removeTaskAC,
     updateTaskStatusTC, updateTaskTitleTC
 } from './state/tasks-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatchType, AppRootStateType} from './state/store';
 import {TaskStatuses, TaskType} from './api/todolists-api'
-import {LinearProgress} from "@mui/material";
 
 
 export type TasksStateType = {
@@ -97,7 +90,6 @@ function App() {
                     </Typography>
                     <Button color="inherit">Login</Button>
                 </Toolbar>
-                {status ==='loading'&& <LinearProgress/>}
             </AppBar>
             <Container fixed>
                 <Grid container style={{padding: '20px'}}>
