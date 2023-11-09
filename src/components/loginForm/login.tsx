@@ -8,6 +8,9 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {useFormik} from "formik";
+import {loginTC} from "../../auth/auth-reducer";
+import {useDispatch} from "react-redux";
+import {AppDispatchType} from "../../state/store";
 
  type FormikErrorType = {
     email?: string
@@ -17,6 +20,7 @@ import {useFormik} from "formik";
 
 
 export const Login = () => {
+    const dispatch = useDispatch<AppDispatchType>();
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -32,9 +36,10 @@ export const Login = () => {
             }
             return errors
         },
-        onSubmit: values => {
+        onSubmit: async(values) => {
             // e.preventDefault()
-            alert(JSON.stringify(values));
+            const promise= await dispatch(loginTC(values))
+            console.log(promise)
             formik.resetForm()
         },
     })
