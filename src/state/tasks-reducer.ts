@@ -1,10 +1,9 @@
-import {TasksStateType} from '../App';
-
 import {AddTodolistActionType, RemoveTodolistActionType, SetTodolistsActionType} from './todolists-reducer';
 import {TaskStatuses, TaskType, todolistsAPI} from '../api/todolists-api'
 import {Dispatch} from "redux";
 import {AppRootStateType} from "./store";
 import {setErrorAC} from "../app/app-reducer";
+import {TasksStateType} from "../features/TodolistsList/tasks-reducer";
 
 export type RemoveTaskActionType = {
     type: 'REMOVE-TASK',
