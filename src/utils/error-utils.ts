@@ -1,25 +1,24 @@
-import {
-    ActionsType,
-    setErrorAC, SetErrorType,
-    setStatusAC, setStatusType,
-} from '../app/app-reducer'
-import { Dispatch } from 'redux'
-import { ResponseType } from '../api/todolists-api'
 
-// generic function
-export const handleServerAppError = <T>(data: ResponseType<T>,dispatch: ErrorUtilsDispatchType, ) => {
-    if (data.messages.length) {
-        dispatch(setErrorAC(data.messages[0]))
-    } else {
-        dispatch(setErrorAC('Some error occurred'))
-    }
-    dispatch(setStatusAC('failed'))
-}
+import { ResponseType } from "api/todolists-api";
+import { Dispatch } from "redux";
+import { appActions } from "app/app-reducer";
 
-export const handleServerNetworkError = (dispatch: Dispatch,error: { message: string }, ) => {
-    dispatch(setErrorAC(error.message))
-    dispatch(setStatusAC('failed'))
-}
+export const handleServerAppError = <D>(
+  data: ResponseType<D>,
+  dispatch: Dispatch,
+) => {
+  if (data.messages.length) {
+    dispatch(appActions.setAppError({error:data.messages[0]}));
+  } else {
+    dispatch(appActions.setAppError({error:"Some error occurred"}));
+  }
+  dispatch(appActions.setAppStatus({status:"failed"}));
+};
 
-
-type ErrorUtilsDispatchType = Dispatch<SetErrorType | setStatusType>
+export const handleServerNetworkError = (
+  error: { message: string },
+  dispatch: Dispatch,
+) => {
+  dispatch(appActions.setAppError({error:error.message ? error.message : "Some error occurred"}));
+  dispatch(appActions.setAppStatus({status:"failed"}));
+};
