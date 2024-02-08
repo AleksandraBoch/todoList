@@ -1,7 +1,7 @@
 import { Dispatch } from "redux";
 import { authAPI } from "api/todolists-api";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { authActions, authReducer } from "features/Login/auth-reducer";
+import { authActions, authReducer } from "features/auth/auth-reducer";
 
 const slice = createSlice({
   name:'app',
