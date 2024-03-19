@@ -1,55 +1,33 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
-export type LoginParamsType = {
-  email?: string;
-  password?: string;
-  rememberMe?: boolean;
-  captcha?: boolean;
-};
-
-const instance = axios.create({
-  baseURL: "https://social-network.samuraijs.com/api/1.1/",
+const settings = {
   withCredentials: true,
   headers: {
-    "API-KEY": "04179916-1cd9-4a8d-bea3-202ee52f7094",
+    "API-KEY": "1cdd9f77-c60e-4af5-b194-659e4ebd5d41",
   },
+};
+const instance = axios.create({
+  baseURL: "https://social-network.samuraijs.com/api/1.1/",
+  ...settings,
 });
 
 // api
-export const authAPI = {
-  login(data: LoginParamsType) {
-    return instance.post<null, AxiosResponse<ResponseType<{ userId: number }>>, LoginParamsType>("auth/login", data);
-  },
-  me() {
-    return instance.get<
-      ResponseType<{
-        id: number;
-        email: string;
-        login: string;
-      }>
-    >("auth/me");
-  },
-  logout() {
-    return instance.delete<ResponseType>("/auth/login");
-  },
-};
-
 export const todolistsAPI = {
   getTodolists() {
-    return instance.get<TodolistType[]>("todo-lists");
+    const promise = instance.get<TodolistType[]>("todo-lists");
+    return promise;
   },
   createTodolist(title: string) {
-    return instance.post<
-      ResponseType<{ item: TodolistType }>,
-      AxiosResponse<ResponseType<{ item: TodolistType }>>,
-      { title: string }
-    >("todo-lists", { title });
+    const promise = instance.post<ResponseType<{ item: TodolistType }>>("todo-lists", { title: title });
+    return promise;
   },
   deleteTodolist(id: string) {
-    return instance.delete<ResponseType>(`todo-lists/${id}`);
+    const promise = instance.delete<ResponseType>(`todo-lists/${id}`);
+    return promise;
   },
   updateTodolist(id: string, title: string) {
-    return instance.put<ResponseType, AxiosResponse<ResponseType>, { title: string }>(`todo-lists/${id}`, { title });
+    const promise = instance.put<ResponseType>(`todo-lists/${id}`, { title: title });
+    return promise;
   },
   getTasks(todolistId: string) {
     return instance.get<GetTasksResponse>(`todo-lists/${todolistId}/tasks`);
@@ -57,19 +35,33 @@ export const todolistsAPI = {
   deleteTask(todolistId: string, taskId: string) {
     return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
   },
-  createTask(todolistId: string, title: string) {
-    return instance.post<
-      ResponseType<{ item: TaskType }>,
-      AxiosResponse<ResponseType<{ item: TaskType }>>,
-      { title: string }
-    >(`todo-lists/${todolistId}/tasks`, { title });
+  createTask(todolistId: string, taskTitile: string) {
+    return instance.post<ResponseType<{ item: TaskType }>>(`todo-lists/${todolistId}/tasks`, { title: taskTitile });
   },
   updateTask(todolistId: string, taskId: string, model: UpdateTaskModelType) {
-    return instance.put<
-      ResponseType<{ item: TaskType }>,
-      AxiosResponse<ResponseType<{ item: TaskType }>>,
-      UpdateTaskModelType
-    >(`todo-lists/${todolistId}/tasks/${taskId}`, model);
+    return instance.put<ResponseType<TaskType>>(`todo-lists/${todolistId}/tasks/${taskId}`, model);
+  },
+};
+
+export type LoginParamsType = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+  captcha?: string;
+};
+
+export const authAPI = {
+  login(data: LoginParamsType) {
+    const promise = instance.post<ResponseType<{ userId?: number }>>("auth/login", data);
+    return promise;
+  },
+  logout() {
+    const promise = instance.delete<ResponseType<{ userId?: number }>>("auth/login");
+    return promise;
+  },
+  me() {
+    const promise = instance.get<ResponseType<{ id: number; email: string; login: string }>>("auth/me");
+    return promise;
   },
 };
 
@@ -83,17 +75,14 @@ export type TodolistType = {
 export type ResponseType<D = {}> = {
   resultCode: number;
   messages: Array<string>;
-  fieldsErrors: Array<string>;
   data: D;
 };
-
 export enum TaskStatuses {
   New = 0,
   InProgress = 1,
   Completed = 2,
   Draft = 3,
 }
-
 export enum TaskPriorities {
   Low = 0,
   Middle = 1,
@@ -101,7 +90,6 @@ export enum TaskPriorities {
   Urgently = 3,
   Later = 4,
 }
-
 export type TaskType = {
   description: string;
   title: string;
