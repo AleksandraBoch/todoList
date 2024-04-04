@@ -5,6 +5,7 @@ import { appActions } from "app/app.reducer";
 import { todolistsActions } from "features/TodolistsList/todolists.reducer";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { clearTasksAndTodolists } from "common/actions/common.actions";
+import { createAppAsyncThunk } from "utils/create-app-async-thunk";
 
 const initialState: TasksStateType = {};
 
@@ -36,9 +37,6 @@ const slice = createSlice({
         tasks[index] = { ...tasks[index], ...action.payload.model };
       }
     },
-    setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>; todolistId: string }>) => {
-      state[action.payload.todolistId] = action.payload.tasks;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -53,46 +51,30 @@ const slice = createSlice({
           state[tl.id] = [];
         });
       })
+      .addCase(fetchTasks.fulfilled,(state,action)=>{
+        state[action.payload.todolistId]=action.payload.tasks
+      })
       .addCase(clearTasksAndTodolists, () => {
         return {};
       });
   },
 });
 
-export const tasksReducer = slice.reducer;
-export const tasksActions = slice.actions;
+export const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[], todolistId: string }, string>
+('tasks/fetchTasks', async (todolistId, thunkAPI) => {
+  const {dispatch, rejectWithValue} = thunkAPI
+  try {
+    dispatch(appActions.setAppStatus({status: 'loading'}))
+    const res = await todolistsAPI.getTasks(todolistId)
+    const tasks = res.data.items
+    dispatch(appActions.setAppStatus({status: 'succeeded'}))
+    return {tasks, todolistId}
+  } catch (e) {
+    handleServerNetworkError(e, dispatch)
+    return rejectWithValue(null)
+  }
+})
 
-// thunks
-
-const fetchTasks = createAsyncThunk(
-  // 1 - prefix
-  'tasks/fetchTasks',
-  // 2 - callback (условно наша старая санка), в которую:
-  // Первым параметром мы передаем параметры необходимые для санки
-  // (если параметров больше чем один упаковываем их в объект)
-  // Вторым параметром thunkAPI, обратившись к которому получим dispatch ...
-  (todolistId: string, thunkAPI ) => {
-    // 3 - деструктурируем параметры именно так. В дальнейшем пригодится такая запись
-    const {dispatch} = thunkAPI
-    dispatch(appActions.setAppStatus({ status: "loading" }));
-    todolistsAPI.getTasks(todolistId)
-      .then((res) => {
-        const tasks = res.data.items
-        dispatch(tasksActions.setTasks({ tasks, todolistId }));
-        dispatch(appActions.setAppStatus({ status: "succeeded" }));
-      })
-  })
-
-// export const fetchTasksTC =
-//   (todolistId: string): AppThunk =>
-//   (dispatch) => {
-//     dispatch(appActions.setAppStatus({ status: "loading" }));
-//     todolistsAPI.getTasks(todolistId).then((res) => {
-//       const tasks = res.data.items;
-//       dispatch(tasksActions.setTasks({ tasks, todolistId }));
-//       dispatch(appActions.setAppStatus({ status: "succeeded" }));
-//     });
-//   };
 
 export const removeTaskTC =
   (taskId: string, todolistId: string): AppThunk =>
@@ -168,3 +150,8 @@ export type UpdateDomainTaskModelType = {
 export type TasksStateType = {
   [key: string]: Array<TaskType>;
 };
+
+
+export const tasksReducer = slice.reducer;
+export const tasksActions = slice.actions;
+export const tasksThunks = {fetchTasks}
