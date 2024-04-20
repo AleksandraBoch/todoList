@@ -11,12 +11,6 @@ const instance = axios.create({
   ...settings,
 });
 
-export type ArgUpdateType={
-  taskId:string,
-  domainModel:UpdateTaskModelType,
-  todolistId:string
-}
-
 // api
 export const todolistsAPI = {
   getTodolists() {
