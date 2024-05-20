@@ -35,12 +35,15 @@ const slice = createSlice({
         tasks[index] = { ...tasks[index], ...action.payload.model };
       }
     },
-    setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>; todolistId: string }>) => {
-      state[action.payload.todolistId] = action.payload.tasks;
-    },
+    // setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>; todolistId: string }>) => {
+    //   state[action.payload.todolistId] = action.payload.tasks;
+    // },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchTasks.fulfilled,(state, action)=>{
+        state[action.payload.todolistId] = action.payload.tasks;
+      })
       .addCase(todolistsActions.addTodolist, (state, action) => {
         state[action.payload.todolist.id] = [];
       })
@@ -66,9 +69,8 @@ export const fetchTasks=createAsyncThunk("tasks/fetchTasks",
 const {dispatch}=thunkAPI
   dispatch(appActions.setAppStatus({ status: "loading" }));
   const res= await todolistsAPI.getTasks(todolistId)
-    const tasks = res.data.items;
-    dispatch(tasksActions.setTasks({ tasks, todolistId }));
     dispatch(appActions.setAppStatus({ status: "succeeded" }));
+    return{ tasks:res.data.items, todolistId }
 })
 
 
