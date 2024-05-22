@@ -5,6 +5,7 @@ import { appActions } from "app/app.reducer";
 import { todolistsActions } from "features/TodolistsList/todolists.reducer";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { clearTasksAndTodolists } from "common/actions/common.actions";
+import { createAppAsyncThunk } from "utils/create-app-async-thunk";
 
 const initialState: TasksStateType = {};
 
@@ -35,9 +36,6 @@ const slice = createSlice({
         tasks[index] = { ...tasks[index], ...action.payload.model };
       }
     },
-    // setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>; todolistId: string }>) => {
-    //   state[action.payload.todolistId] = action.payload.tasks;
-    // },
   },
   extraReducers: (builder) => {
     builder
@@ -64,13 +62,28 @@ const slice = createSlice({
 
 // thunks
 
-export const fetchTasks=createAsyncThunk("tasks/fetchTasks",
+export const fetchTasks=createAppAsyncThunk <
+    { tasks: TaskType[], todolistId: string },
+  // 2. ThunkArg - аргументы санки (тип, который санка принимает)
+  string,
+  // 3. AsyncThunkConfig. Какие есть поля смотрим в доке.
+  // rejectValue - Используем для типизации возвращаемой ошибки
+  // state - используем для типизации App. Когда используем getState
+  { rejectValue: unknown }>
+
+("tasks/fetchTasks",
   async (todolistId:string, thunkAPI)=>{
-const {dispatch}=thunkAPI
-  dispatch(appActions.setAppStatus({ status: "loading" }));
-  const res= await todolistsAPI.getTasks(todolistId)
-    dispatch(appActions.setAppStatus({ status: "succeeded" }));
-    return{ tasks:res.data.items, todolistId }
+const {dispatch,rejectWithValue }=thunkAPI
+    try{
+      dispatch(appActions.setAppStatus({ status: "loading" }));
+      const res= await todolistsAPI.getTasks(todolistId)
+      dispatch(appActions.setAppStatus({ status: "succeeded" }));
+      return{ tasks:res.data.items, todolistId }
+    }
+ catch (error:any){
+  handleServerNetworkError(error,dispatch)
+   return rejectWithValue(null)
+ }
 })
 
 
