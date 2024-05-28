@@ -65,11 +65,11 @@ const slice = createSlice({
 export const fetchTasks=createAppAsyncThunk <
     { tasks: TaskType[], todolistId: string },
   // 2. ThunkArg - аргументы санки (тип, который санка принимает)
-  string,
+  string
   // 3. AsyncThunkConfig. Какие есть поля смотрим в доке.
   // rejectValue - Используем для типизации возвращаемой ошибки
   // state - используем для типизации App. Когда используем getState
-  { rejectValue: unknown }>
+  >
 
 ("tasks/fetchTasks",
   async (todolistId:string, thunkAPI)=>{
