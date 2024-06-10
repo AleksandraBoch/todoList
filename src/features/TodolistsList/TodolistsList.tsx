@@ -9,7 +9,7 @@ import {
   todolistsActions,
 } from "features/TodolistsList/todolists.reducer";
 import {removeTaskTC, tasksThunks } from "features/TodolistsList/tasks.reducer";
-import { TaskStatuses } from "api/todolists-api";
+import { TaskStatuses } from "api/base-api";
 import { Grid, Paper } from "@mui/material";
 import { AddItemForm } from "components/AddItemForm/AddItemForm";
 import { Todolist } from "./Todolist/Todolist";

@@ -1,4 +1,4 @@
-import { authAPI, LoginParamsType } from "api/todolists-api";
+import { authAPI, LoginParamsType } from "api/base-api";
 import { handleServerAppError, handleServerNetworkError } from "utils/handleServerNetworkError";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "app/store";
