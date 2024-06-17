@@ -84,8 +84,11 @@ export const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[], todolistId: s
     }
   });
 
+export const removeTask=createAsyncThunk<any,any>("tasks/removeTask",async ()=>{
 
-export const removeTaskTC =
+})
+
+export const _removeTaskTC =
   (taskId: string, todolistId: string): AppThunk =>
     (dispatch) => {
       todolistsAPI.deleteTask(todolistId, taskId).then(() => {
