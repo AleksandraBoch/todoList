@@ -1,5 +1,5 @@
 import { appActions } from "app/app.reducer";
-import { todolistsActions } from "features/TodolistsList/todolists.reducer";
+import {  todolistsActions, todosThunk } from "features/TodolistsList/todolists.reducer";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { clearTasksAndTodolists } from "common/actions/common.actions";
 import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "utils";
@@ -13,14 +13,12 @@ import {
 import { TaskPriorities, TaskStatuses } from "common/enum/enum";
 
 
-
 const initialState: TasksStateType = {};
 
 const slice = createSlice({
   name: "tasks",
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTasks.fulfilled, (state, action) => {
@@ -37,7 +35,7 @@ const slice = createSlice({
           tasks[index] = { ...tasks[index], ...action.payload.domainModel };
         }
       })
-      .addCase(removeTask.fulfilled,(state,action)=>{
+      .addCase(removeTask.fulfilled, (state, action) => {
         const tasks = state[action.payload.todolistId];
         const index = tasks.findIndex((t) => t.id === action.payload.taskId);
         if (index !== -1) tasks.splice(index, 1);
@@ -48,7 +46,7 @@ const slice = createSlice({
       .addCase(todolistsActions.removeTodolist, (state, action) => {
         delete state[action.payload.id];
       })
-      .addCase(todolistsActions.setTodolists, (state, action) => {
+      .addCase(todosThunk.fetchTodolists.fulfilled, (state, action) => {
         action.payload.todolists.forEach((tl) => {
           state[tl.id] = [];
         });
@@ -62,7 +60,10 @@ const slice = createSlice({
 
 // thunks
 
-export const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[], todolistId: string },
+export const fetchTasks = createAppAsyncThunk<{
+  tasks: TaskType[],
+  todolistId: string
+},
   // 2. ThunkArg - аргументы санки (тип, который санка принимает)
   string
   // 3. AsyncThunkConfig. Какие есть поля смотрим в доке.
@@ -84,28 +85,18 @@ export const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[], todolistId: s
   });
 
 export const removeTask = createAsyncThunk<any, RemoveTaskType>
-("tasks/removeTask", async (arg,thunkAPI) => {
-const {dispatch,rejectWithValue}=thunkAPI
-  try{
+("tasks/removeTask", async (arg, thunkAPI) => {
+  const { dispatch, rejectWithValue } = thunkAPI;
+  try {
     dispatch(appActions.setAppStatus({ status: "loading" }));
-    // @ts-ignore
-    const res=await todolistsAPI.deleteTask(arg.todolistId,arg.taskId)
+    const res = await todolistsAPI.deleteTask(arg.todolistId, arg.taskId);
     dispatch(appActions.setAppStatus({ status: "succeeded" }));
-
-    return arg
-  }catch (error: any) {
+    return arg;
+  } catch (error: any) {
     handleServerNetworkError(error, dispatch);
     return rejectWithValue(null);
   }
 });
-
-// export const _removeTaskTC =
-//   (taskId: string, todolistId: string): AppThunk =>
-//     (dispatch) => {
-//       todolistsAPI.deleteTask(todolistId, taskId).then(() => {
-//         dispatch(tasksActions.removeTask({ taskId, todolistId }));
-//       });
-//     };
 
 export const addTask = createAsyncThunk<any, AddTaskArgType>(
   "tasks/addTAsk", async (arg, thunkAPI) => {
